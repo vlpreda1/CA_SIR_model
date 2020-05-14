@@ -58,7 +58,7 @@ class Cell(Agent):
             self.neighbourhood = self.random.sample(self.model.measure_CA, 9)
             infected_neighbors = sum(neighbor.isInfected for neighbor in self.neighbourhood)
 
-        print(infected_neighbors)
+
         # Assume nextState is unchanged, unless changed below.
 
         # If current state is SUSCEPTIBLE, change next state to infected, based on number of infected neighbors

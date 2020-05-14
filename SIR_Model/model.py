@@ -23,7 +23,8 @@ class SIR_Model(Model):
         # Use a simple grid, where edges wrap around.
         self.grid = Grid(height, width, torus=True)
         self.datacollector = DataCollector(
-            {"Fraction Infected": lambda m: self.count_infected(m,width*height)})
+            {"Fraction Infected": lambda m: self.count_infected(m,width*height),
+             "Fraction Recovered": lambda m: self.count_recovered(m,width*height)})
 
         # Place a cell at each location, with some initialized to
         # ALIVE and some to DEAD.
@@ -53,7 +54,15 @@ class SIR_Model(Model):
     @staticmethod
     def count_infected(model,grid_size):
         """
-            Helper method to count cells in a given state in a given model.
+            Helper method to count INFECTED cells in the model.
         """
         list_state = [a for a in model.schedule.agents if a.state == a.INFECTED]
+        return len(list_state)/grid_size
+    
+    @staticmethod
+    def count_recovered(model,grid_size):
+        """
+            Helper method to count RECOVERED cells in the model.
+        """
+        list_state = [a for a in model.schedule.agents if a.state == a.RECOVERED]
         return len(list_state)/grid_size
