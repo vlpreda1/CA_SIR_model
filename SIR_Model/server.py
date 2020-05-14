@@ -39,7 +39,11 @@ cell_chart2 = ChartModule([{"Label": "Fraction Recovered", "Color": 'Green'}],
 model_params = {
     "height": 50,
     "width": 50,
-    "dummy": UserSettableParameter("static_text", value = "NB. Use 'Reset'-button to activate new model settings"),
+    "dummy": UserSettableParameter("static_text", value = '''Use 'Reset'-button to activate new model settings 
+                                   \n White cells are Susceptible individuals
+                                   \n Red cells are Infected individuals
+                                   \n Green cells are Recovered individuals
+                                   \n Yellow cells are Infected but Quarantined individuals'''),
     "density": UserSettableParameter("slider", "Initial density", 0.2, 0.01, 1.0, 0.01),
     "p_inf": UserSettableParameter("slider", "Probability of infection = R0 / 9: ", 0.1, 0.01, 1.0, 0.01),
     "p_rec": UserSettableParameter("slider", "Probability of recovery", 0.2, 0.01, 1.0, 0.01),
