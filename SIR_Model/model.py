@@ -56,7 +56,7 @@ class SIR_Model(Model):
         """
             Helper method to count INFECTED cells in the model.
         """
-        list_state = [a for a in model.schedule.agents if a.state == a.INFECTED]
+        list_state = [a for a in model.schedule.agents if (a.state == a.INFECTED or a.state == a.QUARANTINED)]
         return len(list_state)/grid_size
     
     @staticmethod
