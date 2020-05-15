@@ -33,7 +33,8 @@ def portrayCell(cell):
 
 # Make a world that is 50x50, on a 500x500 display.
 canvas_element = CanvasGrid(portrayCell, 50, 50, 500, 500)
-cell_chart = ChartModule([{"Label": "Fraction Infected", "Color": 'Red'}],
+cell_chart = ChartModule([{"Label": "Fraction Infected", "Color": 'Red'},
+                          {"Label": "Fraction Quarantined", "Color": 'Yellow'}],
                          canvas_height=500, canvas_width=1000)
 cell_chart2 = ChartModule([{"Label": "Fraction Recovered", "Color": 'Green'},
                            {"Label": "Fraction Dead", "Color": 'Black'}],
