@@ -7,8 +7,11 @@ class Cell(Agent):
     INFECTED = 1
     RECOVERED = 2
     QUARANTINED = 3
+    DEAD = 4
+    
 
-    def __init__(self, pos, model,prob_inf, prob_rec, prob_reinf, prob_test, spatial, init_state= SUSCEPTIBLE):
+    def __init__(self, pos, model,prob_inf, prob_rec, prob_reinf, prob_test,
+                 prob_death, spatial, init_state= SUSCEPTIBLE):
         '''
         Create a cell, in the given state, at the given x, y position.
         '''
@@ -21,6 +24,7 @@ class Cell(Agent):
         self.prob_rec = prob_rec
         self.prob_reinf = prob_reinf
         self.prob_test = prob_test
+        self.prob_death = prob_death
 
     @property
     def isInfected(self):
@@ -34,11 +38,15 @@ class Cell(Agent):
     @property
     def isQuarantined(self):
         return self.state == self.QUARANTINED
-
+    @property
+    def isDead(self):
+        return self.state == self.DEAD
+    
     @property
     def neighbors(self):
         return self.model.grid.neighbor_iter((self.x, self.y), True)
 
+        
     def step(self):
         '''
         Compute if the cell will be in S, I, R or Q in the next state.  This is
@@ -66,7 +74,9 @@ class Cell(Agent):
             self._nextState = self.INFECTED
         # If current state is INFECTED or QUARANTINED, recover based on some probability
         elif (self.isInfected or self.isQuarantined) and self.random.random() < self.prob_rec:
-            self._nextState = self.RECOVERED        
+            self._nextState = self.RECOVERED 
+        elif (self.isInfected or self.isQuarantined) and self.random.random() < self.prob_death:
+            self._nextState = self.DEAD
         elif self.isRecovered and self.random.random() < infected_neighbors * self.prob_reinf:
             self._nextState = self.INFECTED
         else:

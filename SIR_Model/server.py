@@ -23,6 +23,8 @@ def portrayCell(cell):
         portrayal["Color"] = "green"
     elif cell.isQuarantined:
         portrayal["Color"] = "yellow"
+    elif cell.isDead:
+        portrayal["Color"] = "black"
 
    # portrayal["Color"] = 
     
@@ -33,9 +35,9 @@ def portrayCell(cell):
 canvas_element = CanvasGrid(portrayCell, 50, 50, 500, 500)
 cell_chart = ChartModule([{"Label": "Fraction Infected", "Color": 'Red'}],
                          canvas_height=500, canvas_width=1000)
-cell_chart2 = ChartModule([{"Label": "Fraction Recovered", "Color": 'Green'}],
+cell_chart2 = ChartModule([{"Label": "Fraction Recovered", "Color": 'Green'},
+                           {"Label": "Fraction Dead", "Color": 'Black'}],
                          canvas_height=500, canvas_width=1000)
-
 model_params = {
     "height": 50,
     "width": 50,
@@ -48,6 +50,7 @@ model_params = {
     "p_inf": UserSettableParameter("slider", "Probability of infection = R0 / 9: ", 0.1, 0.01, 1.0, 0.01),
     "p_rec": UserSettableParameter("slider", "Probability of recovery", 0.2, 0.01, 1.0, 0.01),
     "p_reinf": UserSettableParameter("slider", "Probability of reinfection", 0.05, 0.0, 1.0, 0.01),
+    "p_death": UserSettableParameter("slider", "Probability of death", 0.05, 0.0, 1.0, 0.01),
     "p_test": UserSettableParameter("slider", "Testing rate of population", 0.1, 0.0, 1.0, 0.01),
     "spatial": UserSettableParameter("checkbox", "Spatial", value=False),}
 
