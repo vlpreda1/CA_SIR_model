@@ -48,7 +48,7 @@ model_params = {
                                    \n Green cells are Recovered individuals
                                    \n Yellow cells are Infected but Quarantined individuals'''),
     "density": UserSettableParameter("slider", "Initial density", 0.2, 0.01, 1.0, 0.01),
-    "p_inf": UserSettableParameter("slider", "Probability of infection = R0 / 9: ", 0.1, 0.01, 1.0, 0.01),
+    "p_inf": UserSettableParameter("slider", "Probability of infection", 0.1, 0.01, 1.0, 0.01),
     "p_rec": UserSettableParameter("slider", "Probability of recovery", 0.2, 0.01, 1.0, 0.01),
     "p_reinf": UserSettableParameter("slider", "Probability of reinfection", 0.05, 0.0, 1.0, 0.01),
     "p_death": UserSettableParameter("slider", "Probability of death", 0.05, 0.0, 1.0, 0.01),
