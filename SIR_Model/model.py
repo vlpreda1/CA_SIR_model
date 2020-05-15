@@ -25,6 +25,7 @@ class SIR_Model(Model):
         self.grid = Grid(height, width, torus=True)
         self.datacollector = DataCollector(
             {"Fraction Infected": lambda m: self.count_infected(m,width*height),
+             "Fraction Quarantined": lambda m: self.count_quarantined(m,width*height),
              "Fraction Recovered": lambda m: self.count_recovered(m,width*height),
              "Fraction Dead": lambda m: self.count_dead(m,width*height)})
 
@@ -67,6 +68,14 @@ class SIR_Model(Model):
             Helper method to count RECOVERED cells in the model.
         """
         list_state = [a for a in model.schedule.agents if a.state == a.RECOVERED]
+        return len(list_state)/grid_size
+    
+    @staticmethod
+    def count_quarantined(model,grid_size):
+        """
+            Helper method to count QUARANTINED cells in the model.
+        """
+        list_state = [a for a in model.schedule.agents if a.state == a.QUARANTINED]
         return len(list_state)/grid_size
 
     @staticmethod
