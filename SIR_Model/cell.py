@@ -26,6 +26,7 @@ class Cell(Agent):
         self.prob_test = prob_test
         self.prob_death = prob_death
         self.days_infected = 0
+        self.quarantineMe = False
 
     @property
     def isInfected(self):
@@ -45,7 +46,7 @@ class Cell(Agent):
     
     @property
     def neighbors(self):
-        return self.model.grid.neighbor_iter((self.x, self.y), True)
+        return self.model.grid.iter_neighbors((self.x, self.y), moore = True)  #PROBLEM MIGHT BE HERE
 
         
     def step(self):
@@ -60,18 +61,20 @@ class Cell(Agent):
         
         if self.spatial:
             infected_neighbors = sum(neighbor.isInfected for neighbor in self.neighbors)
+            self.neighbourhood = self.neighbors
 
         # The next function is using random cells instead of neigboring cells;
         # in this way "mean field" is simulated
         else:
             self.neighbourhood = self.random.sample(self.model.measure_CA, 9)
-            infected_neighbors = sum(neighbor.isInfected or neighbor.isQuarantined for neighbor in self.neighbourhood)
+            self.infected_neighbors = sum(neighbor.isInfected for neighbor in self.neighbourhood)
 
-
-        if self.isInfected or self.isQuarantined:
-            self.days_infected += 1
+        if self.quarantineMe == True:
+            self._nextState = self.QUARANTINED
+            self.quarantineMe = False
+            print("qura",(self.x, self.y))
         # If current state is SUSCEPTIBLE, change next state to infected, based on number of infected neighbors
-        if self.isSusceptible and self.random.random() < (infected_neighbors * self.prob_inf):
+        elif self.isSusceptible and self.random.random() < (infected_neighbors * self.prob_inf):
             self._nextState = self.INFECTED
         # If current state is INFECTED or QUARANTINED, recover based on some probability
         elif (self.isInfected or self.isQuarantined) and self.random.random() < self.prob_rec:
@@ -90,7 +93,13 @@ class Cell(Agent):
         if not(self.isQuarantined or self.isDead) and self.random.random() < self.prob_test :
             if self.isInfected:
                 self._nextState = self.QUARANTINED
-                
+                print((self.x, self.y), infected_neighbors)
+                for n in self.neighbourhood:
+                    if n.isInfected:
+                        print((n.x, n.y))
+                        n.quarantineMe = True
+
+
             
         
                     
