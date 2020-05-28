@@ -11,13 +11,12 @@ class Cell(Agent):
     
 
     def __init__(self, pos, model,prob_inf, prob_rec, prob_reinf, prob_test,
-                 prob_death, spatial, init_state= SUSCEPTIBLE):
+                 prob_death, test_n, hood, init_state= SUSCEPTIBLE, init_qme = False):
         '''
         Create a cell, in the given state, at the given x, y position.
         '''
         super().__init__(pos, model)
         self.x, self.y = pos
-        self.spatial = spatial
         self.state = init_state
         self._nextState = None
         self.prob_inf = prob_inf
@@ -26,8 +25,10 @@ class Cell(Agent):
         self.prob_test = prob_test
         self.prob_death = prob_death
         self.days_infected = 0
-        self.quarantineMe = False
-
+        self.quarantineMe = init_qme
+        self.test_n = test_n
+        self.hood = hood
+        
     @property
     def isInfected(self):
         return self.state == self.INFECTED
@@ -46,7 +47,11 @@ class Cell(Agent):
     
     @property
     def neighbors(self):
-        return self.model.grid.iter_neighbors((self.x, self.y), moore = True)  #PROBLEM MIGHT BE HERE
+        return self.model.grid.iter_neighbors((self.x, self.y), True)  #PROBLEM MIGHT BE HERE
+  
+    @property
+    def VN_neighbors(self):
+        return self.model.grid.iter_neighbors((self.x, self.y), False)  
 
         
     def step(self):
@@ -59,20 +64,19 @@ class Cell(Agent):
         '''
 
         
-        if self.spatial:
-            infected_neighbors = sum(neighbor.isInfected for neighbor in self.neighbors)
-            self.neighbourhood = self.neighbors
 
-        # The next function is using random cells instead of neigboring cells;
-        # in this way "mean field" is simulated
+        infected_neighbors = sum(neighbor.isInfected for neighbor in self.neighbors)
+        
+        if self.hood == "Moore":
+            self.neighbourhood = self.neighbors
         else:
-            self.neighbourhood = self.random.sample(self.model.measure_CA, 9)
-            self.infected_neighbors = sum(neighbor.isInfected for neighbor in self.neighbourhood)
+            self.neighbourhood = self.VN_neighbors
+
+
 
         if self.quarantineMe == True:
             self._nextState = self.QUARANTINED
             self.quarantineMe = False
-            print("qura",(self.x, self.y))
         # If current state is SUSCEPTIBLE, change next state to infected, based on number of infected neighbors
         elif self.isSusceptible and self.random.random() < (infected_neighbors * self.prob_inf):
             self._nextState = self.INFECTED
@@ -90,14 +94,17 @@ class Cell(Agent):
         
 
         #random testing of prob_test rate of the population that is not dead or tested positive
-        if not(self.isQuarantined or self.isDead) and self.random.random() < self.prob_test :
-            if self.isInfected:
-                self._nextState = self.QUARANTINED
-                print((self.x, self.y), infected_neighbors)
-                for n in self.neighbourhood:
-                    if n.isInfected:
-                        print((n.x, n.y))
-                        n.quarantineMe = True
+        if self.test_n == True:
+            if not(self.isQuarantined or self.isDead) and self.random.random() < self.prob_test :
+                if self.isInfected:
+                    self._nextState = self.QUARANTINED
+                    for n in self.neighbourhood:
+                        if n.isInfected:
+                            n.quarantineMe = True
+        else:
+            if not(self.isQuarantined or self.isDead) and self.random.random() < self.prob_test :
+                if self.isInfected:
+                    self._nextState = self.QUARANTINED
 
 
             

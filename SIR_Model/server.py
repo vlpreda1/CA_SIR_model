@@ -1,6 +1,7 @@
 from mesa.visualization.modules import CanvasGrid, ChartModule
 from mesa.visualization.ModularVisualization import ModularServer
 from mesa.visualization.UserParam import UserSettableParameter
+
 from .model import SIR_Model
 
 
@@ -53,6 +54,8 @@ model_params = {
     "p_reinf": UserSettableParameter("slider", "Probability of reinfection", 0.01, 0.0, 1.0, 0.01),
     "p_death": UserSettableParameter("slider", "Probability of death", 0.02, 0.0, 1.0, 0.01),
     "p_test": UserSettableParameter("slider", "Testing rate of population", 0.05, 0.0, 1.0, 0.01),
-    "spatial": UserSettableParameter("checkbox", "Spatial", value=True),}
+    "test_n": UserSettableParameter("checkbox", "Test Neighbors", value = True),
+    "hood" : UserSettableParameter("choice", "Neighborhood", value= "Moore", 
+                                   choices= ["Moore", "Von Neumann"])}
 
 server = ModularServer(SIR_Model, [canvas_element, cell_chart, cell_chart2], "SIR basic model",  model_params)
