@@ -2,16 +2,15 @@ from mesa import Model
 from mesa.datacollection import DataCollector
 from mesa.time import SimultaneousActivation
 from mesa.space import Grid
-from mesa.batchrunner import BatchRunner
 
 from .cell import Cell
 
-class SIR_Model(Model):
+class infection_model(Model):
    
 
     def __init__(self, height=100, width=100, dummy="", density=0.5, 
                  p_inf = 0.1, p_rec = 0.3, p_reinf = 0.05, p_test = 0.1,
-                 p_death = 0.2,test_n = 0, hood = "Moore"):
+                 p_death = 0.2,test_n = 0, hood = "Moore", datacollector = {}):
                 
         '''
         Create a new playing area of (height, width) cells.
@@ -21,15 +20,16 @@ class SIR_Model(Model):
         # computing their next state simultaneously.  This needs to
         # be done because each cell's next state depends on the current
         # state of all its neighbors -- before they've changed.
+        self.height = height
+        self.width = width
         self.schedule = SimultaneousActivation(self)
 
         # Use a simple grid, where edges wrap around.
         self.grid = Grid(height, width, torus=True)
+
+        
         self.datacollector = DataCollector(
-            {"Fraction Infected": lambda m: self.count_infected(m,width*height),
-             "Fraction Quarantined": lambda m: self.count_quarantined(m,width*height),
-             "Fraction Recovered": lambda m: self.count_recovered(m,width*height),
-             "Fraction Dead": lambda m: self.count_dead(m,width*height)})
+            model_reporters = self.compute_reporters())
 
         # Place a cell at each location, with some initialized to
         # ALIVE and some to DEAD.
@@ -45,20 +45,8 @@ class SIR_Model(Model):
         self.datacollector.collect(self)
         
         
-        var_params = {"hood": ["Moore", "Von Neumann"] }
-        fixed_params = {"density": 0.4,
-                    "p_inf": 0.1,
-                    "p_rec": 0.1,
-                    "p_reinf": 0.01,
-                    "p_death": 0.02,
-                    "p_test": 0.05,
-                    "test_n": True}
-        
-        mod_rep = self.datacollector
-        b_runn = BatchRunner(SIR_Model, var_params, fixed_params, model_reporters = mod_rep) 
-        b_runn.run_all
-        coll = b_runn.get_model_vars_dataframe
-        print(coll)
+
+
         
     def step(self):
         '''
@@ -68,9 +56,18 @@ class SIR_Model(Model):
         self.schedule.step()
         # collect data
         self.datacollector.collect(self)
+        self.dc = self.datacollector
         #      step_data = self.datacollector.get_model_vars_dataframe()
         #      step_data.to_csv("numdata.csv")
-    
+
+
+    def compute_reporters(self):
+        mod_rep = {"Fraction Infected": lambda m: self.count_infected(m, self.height * self.width),
+                   "Fraction Quarantined": lambda m: self.count_quarantined(m, self.height * self.width),
+                   "Fraction Recovered": lambda m: self.count_recovered(m, self.height * self.width),
+                   "Fraction Dead": lambda m: self.count_dead(m, self.height * self.width),}
+        return mod_rep
+
     @staticmethod
     def count_infected(model,grid_size):
         """
