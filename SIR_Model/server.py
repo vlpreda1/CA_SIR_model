@@ -2,7 +2,8 @@ from mesa.visualization.modules import CanvasGrid, ChartModule
 from mesa.visualization.ModularVisualization import ModularServer
 from mesa.visualization.UserParam import UserSettableParameter
 
-from .model import SIR_Model
+
+from .model import infection_model
 
 
 def portrayCell(cell):
@@ -58,4 +59,4 @@ model_params = {
     "hood" : UserSettableParameter("choice", "Neighborhood", value= "Moore", 
                                    choices= ["Moore", "Von Neumann"])}
 
-server = ModularServer(SIR_Model, [canvas_element, cell_chart, cell_chart2], "SIR basic model",  model_params)
+server = ModularServer(infection_model, [canvas_element, cell_chart, cell_chart2], "SIR basic model",  model_params)
