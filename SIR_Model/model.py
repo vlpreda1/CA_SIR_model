@@ -27,7 +27,9 @@ class infection_model(Model):
         # Use a simple grid, where edges wrap around.
         self.grid = Grid(height, width, torus=True)
 
-        
+        # Use the DataCollector method to store the relevant information of our
+        # model. This helps with plotting in the web socke, but also with running 
+        #more models at the same time using BatchRunner (in batch.py)
         self.datacollector = DataCollector(
             model_reporters = self.compute_reporters())
 
@@ -54,14 +56,18 @@ class infection_model(Model):
         '''
         self.measure_CA = [a for a in self.schedule.agents]
         self.schedule.step()
+
         # collect data
         self.datacollector.collect(self)
-        self.dc = self.datacollector
-        #      step_data = self.datacollector.get_model_vars_dataframe()
-        #      step_data.to_csv("numdata.csv")
 
 
     def compute_reporters(self):
+        '''
+        
+        Returns
+        A dictionary of the fractions of the population that are Infected, Quarantined,
+        Recovered or Dead
+        '''
         mod_rep = {"Fraction Infected": lambda m: self.count_infected(m, self.height * self.width),
                    "Fraction Quarantined": lambda m: self.count_quarantined(m, self.height * self.width),
                    "Fraction Recovered": lambda m: self.count_recovered(m, self.height * self.width),

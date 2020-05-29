@@ -4,6 +4,8 @@ from mesa import Agent
 class Cell(Agent):
     '''Represents a single ALIVE or DEAD cell in the simulation.'''
 
+    # The four states that an Agent can have
+    
     SUSCEPTIBLE = 0
     INFECTED = 1
     RECOVERED = 2
@@ -48,7 +50,7 @@ class Cell(Agent):
     
     @property
     def neighbors(self):
-        return self.model.grid.iter_neighbors((self.x, self.y), True)  #PROBLEM MIGHT BE HERE
+        return self.model.grid.iter_neighbors((self.x, self.y), True)  
   
     @property
     def VN_neighbors(self):
@@ -65,16 +67,18 @@ class Cell(Agent):
         '''
 
         
-
+        # compute the number of infected neighbors of the Agent
         infected_neighbors = sum(neighbor.isInfected for neighbor in self.neighbors)
         
+        # Choose the neighbourhood to be considered when testing
         if self.hood == "Moore":
             self.neighbourhood = self.neighbors
         else:
             self.neighbourhood = self.VN_neighbors
 
 
-
+        # quarantineMe is the variable that decides wheter the neighbor of an infected individual
+        # should be quarantined or not
         if self.quarantineMe == True:
             self._nextState = self.QUARANTINED
             self.quarantineMe = False
@@ -94,7 +98,8 @@ class Cell(Agent):
             self._nextState = self.state
         
 
-        #random testing of prob_test rate of the population that is not dead or tested positive
+        # Random testing with probability prob_test. If test_n is true, also test the neighbors 
+        # of the individuals that test positive
         if self.test_n == True:
             if not(self.isQuarantined or self.isDead) and self.random.random() < self.prob_test :
                 if self.isInfected:
